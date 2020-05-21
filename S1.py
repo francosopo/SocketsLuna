@@ -37,7 +37,7 @@ class Servidor():
                                 sys.exit()
                                 print(self.ident)
                     else:
-                                continue
+                            pass
                     
                     msg = input('->')
                     if msg == 'salir': 
@@ -71,31 +71,50 @@ class Servidor():
                 print("Aceptar iniciado")
                 while True:
                     try:
-                        conn, addr = self.sock.accept() 
-                        conn.setblocking(False) 
-                        self.clientes.append(conn)
+                        conn, addr = self.sock.accept()
+                        conn.setblocking(False)
+                        cliente = Cliente(conn,0,conn.getsockname())
+                        self.clientes.append(cliente)
                     except: 
-                            pass
+                        pass
                        
 
         def procesarconn(self):
-                print("Procesar iniciado")
-                while True:
-                        if len(self.clientes) > 0:
-                                for c in self.clientes:
-                                        try:
-                                                
-                                                data = c.recv(1024)
-                                                if data:
-                                                        print(data)
-                                                        self.msg_to_all(data,c)
-                                        except:
-                                                pass
+            print("Procesar iniciado")
+            while True:
+                if len(self.clientes) > 0:
+                    for c in self.clientes:
+                        try:
+                            data = c.recv(1024)
+                            c.increaseMsg()
+                            if data and c.getContador() != 1:
+                                print(data)
+                                self.msg_to_all(data,c)
+                        except:
+                            pass
                
  
 
         def mostrar(self):
             print(self.clientes,"and",self.ident)
-        
+
+class Cliente:
+    def __init__(self, conn,contMsg, ip):
+        self.__cliente = conn
+        self.__contMsg = contMsg
+        self.__ip = ip
+
+    def getCliente(self):
+        return self.__cliente
+    def getContador(self):
+        return self.__contMsg
+    def recv(self,num):
+        return self.__cliente.recv(num)
+    def send(self,msg):
+        return self.__cliente.send(msg)
+    def increaseMsg(self):
+        self.__contMsg +=1
+    def getSockName(self):
+        return self.__ip
 s = Servidor()
 

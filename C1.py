@@ -16,15 +16,14 @@ class Cliente():
                 msg_recv.start()
                 ident=input('[CLIENT]: Identificacion> ')
                 print("\n")
-                self.sock.send(ident.encode('utf-8'))
+                if ident != 'error':
+                        self.send_ident(ident)
+                else:
+                        self.sock.close()
+                        sys.exit()
+                        self.sock.send(ident.encode('utf-8'))
                 while True:
                         #ident=input('Ingresa tu nick:')
-                        if ident != 'error':
-                                self.send_ident(ident)
-                                pass
-                        else:
-                                self.sock.close()
-                                sys.exit()
                         msg = input('->')
                         if msg != 'salir':                                
                                 self.send_msg(msg)
